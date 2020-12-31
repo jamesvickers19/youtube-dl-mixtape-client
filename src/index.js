@@ -11,18 +11,31 @@ reportWebVitals();
 class StartForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {
-    };
+    this.state = {url: ''};
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
   }
-  
+
+  handleChange(event) {
+    this.setState({url: event.target.value});
+  }
+
+  handleSubmit(event) {
+    alert('url: ' + this.state.url);
+    event.preventDefault();
+  }
+
   render() {
     return (
-      <div>
-      Enter the YouTube link:
-      <input></input>
-      <button></button>
-      </div>
-      );
+      <form onSubmit={this.handleSubmit}>
+        <label>
+          Enter a YouTube link:
+          <input onChange={this.handleChange}>
+          </input>
+        </label>
+        <input type="submit" value="Submit" />
+      </form>
+    );
   }
 }
 
