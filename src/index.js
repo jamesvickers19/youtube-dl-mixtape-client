@@ -21,7 +21,20 @@ class StartForm extends React.Component {
   }
 
   handleSubmit(event) {
-    alert('url: ' + this.state.url);
+    const url = new URL(this.state.url);
+    const urlParams = new URLSearchParams(url.search);
+    const videoId = urlParams.get('v');
+    if (videoId === null) {
+      alert(`Url '${this.state.url}' is not a YouTube video`);
+      return;
+    }
+    fetch(`http://127.0.0.1:5000/tracks?v=${videoId}`).then(function(response) {
+      return response.json();
+    }).then(function(data) {
+      console.log(`type: ${typeof(data)}, data: ${data}`);
+    }).catch(function() {
+      console.log("Booo");
+    });
     event.preventDefault();
   }
 
