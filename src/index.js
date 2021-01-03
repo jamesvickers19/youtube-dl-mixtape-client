@@ -1,7 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import CheckBox from './CheckBox'
+import VideoSection from './VideoSection'
 import reportWebVitals from './reportWebVitals';
 
 // If you want to start measuring performance in your app, pass a function
@@ -15,7 +15,8 @@ class StartForm extends React.Component {
     this.state = {url: '', tracks: []};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
-    this.handleCheckChildElement = this.handleCheckChildElement.bind(this);
+    this.onSelectedChange = this.onSelectedChange.bind(this);
+    this.onNameChange = this.onNameChange.bind(this);
   }
 
   handleChange(event) {
@@ -38,11 +39,18 @@ class StartForm extends React.Component {
     event.preventDefault();
   }
 
-  handleCheckChildElement(event) {
+  onSelectedChange(event) {
     let tracks = this.state.tracks;
-    tracks
-      .filter(t => t.name === event.target.value)
-      .forEach(t => t.selected = event.target.checked);
+    let index = event.target.getAttribute("index");
+    tracks[index].selected = event.target.checked;
+    this.setState({tracks: tracks});
+    this.state.tracks.forEach(t => console.log(`${t.name} selected = ${t.selected}`));
+  }
+
+  onNameChange(event) {
+    let tracks = this.state.tracks;
+    let index = event.target.getAttribute("index");
+    tracks[index].name = event.target.value;
     this.setState({tracks: tracks});
     this.state.tracks.forEach(t => console.log(`${t.name} selected = ${t.selected}`));
   }
@@ -59,12 +67,18 @@ class StartForm extends React.Component {
         <br/>
         <ul>
         {
+          // TODO use better key
           this.state.tracks.map((track, index) => (
-            <CheckBox
-              key={index}
-              handleCheckChildElement={this.handleCheckChildElement}
-              isChecked={track.selected}
-              value={track.name} />))
+            <li key={index}>
+              <VideoSection
+                index={index}
+                onSelectedChange={this.onSelectedChange}
+                onNameChange={this.onNameChange}
+                isChecked={track.selected}
+                value={track.name}
+              />
+            </li>
+            ))
         }
         </ul>
       </form>
