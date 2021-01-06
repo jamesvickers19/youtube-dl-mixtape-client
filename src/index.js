@@ -76,6 +76,8 @@ class StartForm extends React.Component {
                 onNameChange={this.onNameChange}
                 isChecked={track.selected}
                 value={track.name}
+                startTime={track.startTimeSec}
+                endTime={track.endTimeSec}
               />
             </li>
             ))
@@ -92,3 +94,11 @@ ReactDOM.render(
   </React.StrictMode>,
   document.getElementById('root')
 );
+
+// TODO
+// - Show track lengths with their names
+// - Button to download all selected tracks (as e.g. zip)
+// - Button alongside each track to download separately
+// - Show entire video name as it's own track
+// - More error handling
+// - Support mp3 downloads with metadata, e.g. artist/album/song ?

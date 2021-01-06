@@ -16,6 +16,7 @@ export const VideoSection = props => {
           value={props.value}
           onChange={props.onNameChange}
         />
+        <label>(startTime: {props.startTime}, endTime: {props.endTime})</label>
       </div>
     )
 }
