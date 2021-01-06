@@ -16,9 +16,17 @@ export const VideoSection = props => {
           value={props.value}
           onChange={props.onNameChange}
         />
-        <label>(startTime: {props.startTime}, endTime: {props.endTime})</label>
+        <label>({toTimeString(props.startTime)} - {toTimeString(props.endTime)})</label>
       </div>
     )
+}
+
+function toTimeString(seconds) {
+  var hours   = Math.floor(seconds / 3600);
+  var minutes = Math.floor((seconds - (hours * 3600)) / 60);
+  var remainingSeconds = seconds - (hours * 3600) - (minutes * 60);
+  let prependZero = x => x < 10 ? "0" + x : x;
+  return `${prependZero(hours)}:${prependZero(minutes)}:${prependZero(remainingSeconds)}`;
 }
 
 export default VideoSection;
