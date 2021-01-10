@@ -32,7 +32,7 @@ class StartForm extends React.Component {
       return;
     }
 
-    fetch(`http://localhost:5000/tracks?v=${videoId}`)
+    fetch(`http://localhost:5000/sections?v=${videoId}`)
       .then(response => response.json())
       .then(tracks => this.setState({tracks: tracks.map(t => ({ ...t, selected: true }))}))
     .catch(error => console.log(`Request to ${url} failed: ${error}`));
