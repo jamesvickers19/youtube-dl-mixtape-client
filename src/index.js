@@ -9,12 +9,15 @@ import reportWebVitals from './reportWebVitals';
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 
+const serverURL = "http://localhost:8080";
+
 class StartForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {url: '', tracks: []};
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleDownload = this.handleDownload.bind(this);
     this.onSelectedChange = this.onSelectedChange.bind(this);
     this.onNameChange = this.onNameChange.bind(this);
   }
@@ -23,20 +26,50 @@ class StartForm extends React.Component {
     this.setState({url: event.target.value});
   }
 
-  handleSubmit(event) {
+  getVideoId() {
     const url = new URL(this.state.url);
     const urlParams = new URLSearchParams(url.search);
-    const videoId = urlParams.get('v');
+    return urlParams.get('v');
+  }
+
+  handleSubmit(event) {
+    let videoId = this.getVideoId();
     if (videoId === null) {
       alert(`Url '${this.state.url}' is not a YouTube video`);
       return;
     }
 
-    fetch(`http://localhost:8080/sections/${videoId}`)
+    fetch(`${serverURL}/sections/${videoId}`)
       .then(response => response.json())
       .then(tracks => this.setState({tracks: tracks.map(t => ({ ...t, selected: true }))}))
-    .catch(error => console.log(`Request to ${url} failed: ${error}`));
+    .catch(error => console.log(`Request to ${serverURL} failed: ${error}`));
     event.preventDefault();
+  }
+
+  handleDownload(event) {
+    // TODO should probably cache videoId after initial track fetch
+    // otherwise it can get edited and be wrong at this point
+    let videoId = this.getVideoId();
+    let requestData = {
+      'video-id': videoId,
+      'sections': this.state.tracks.filter(t => t.selected)
+    };
+    fetch(`${serverURL}/download`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestData)
+    })
+    .then( res => res.blob() )
+    .then( blob => {
+      // TODO set filename of downloaded file
+      var file = window.URL.createObjectURL(blob);
+      window.location.assign(file);
+    })
+    .catch((error) => {
+      console.error('Error:', error);
+    });
   }
 
   onSelectedChange(event) {
@@ -44,7 +77,6 @@ class StartForm extends React.Component {
     let index = event.target.getAttribute("index");
     tracks[index].selected = event.target.checked;
     this.setState({tracks: tracks});
-    this.state.tracks.forEach(t => console.log(`${t.name} selected = ${t.selected}`));
   }
 
   onNameChange(event) {
@@ -52,7 +84,6 @@ class StartForm extends React.Component {
     let index = event.target.getAttribute("index");
     tracks[index].name = event.target.value;
     this.setState({tracks: tracks});
-    this.state.tracks.forEach(t => console.log(`${t.name} selected = ${t.selected}`));
   }
 
   render() {
@@ -63,7 +94,7 @@ class StartForm extends React.Component {
           <input onChange={this.handleChange}>
           </input>
         </label>
-        <input type="submit" value="Submit" />
+        <input type="submit" value="submit" />
         <br/>
         <ul>
         {
@@ -83,6 +114,9 @@ class StartForm extends React.Component {
             ))
         }
         </ul>
+        {this.state.tracks.length > 0
+          ? <button onClick={this.handleDownload}>download</button>
+          : null}  
       </form>
     );
   }
