@@ -32,7 +32,7 @@ class StartForm extends React.Component {
       return;
     }
 
-    fetch(`http://localhost:5000/sections?v=${videoId}`)
+    fetch(`http://localhost:8080/sections/${videoId}`)
       .then(response => response.json())
       .then(tracks => this.setState({tracks: tracks.map(t => ({ ...t, selected: true }))}))
     .catch(error => console.log(`Request to ${url} failed: ${error}`));
@@ -76,8 +76,8 @@ class StartForm extends React.Component {
                 onNameChange={this.onNameChange}
                 isChecked={track.selected}
                 value={track.name}
-                startTime={track.startTimeSec}
-                endTime={track.endTimeSec}
+                startTime={track.start}
+                endTime={track.end}
               />
             </li>
             ))
