@@ -43,17 +43,17 @@ class StartForm extends React.Component {
 
     fetch(`${serverURL}/sections/${videoId}`)
       .then(response => response.json())
-      .then(tracks => this.setState({tracks: tracks.map(t => ({ ...t, selected: true }))}))
+      .then(tracks => this.setState({
+        tracks: tracks.map(t => ({ ...t, selected: true})),
+        fetchedVideoId: videoId
+      }))
     .catch(error => console.log(`Request to ${serverURL} failed: ${error}`));
     event.preventDefault();
   }
 
   handleDownload(event) {
-    // TODO should probably cache videoId after initial track fetch
-    // otherwise it can get edited and be wrong at this point
-    let videoId = this.getVideoId();
     let requestData = {
-      'video-id': videoId,
+      'video-id': this.state.fetchedVideoId,
       'sections': this.state.tracks.filter(t => t.selected)
     };
     fetch(`${serverURL}/download`, {
@@ -154,8 +154,7 @@ ReactDOM.render(
 
 // TODO
 // - give better downloaded filename; at least make it has extension .zip
-// - large downloads sometimes fail in server
-// - should probably cache videoId after initial track fetch since it's used in state by download button
+// - downloads sometimes fail in server during sectioning where it can't find some file
 // - Button alongside each track to download separately
 // - Show entire video name as it's own track
 // - More error handling
