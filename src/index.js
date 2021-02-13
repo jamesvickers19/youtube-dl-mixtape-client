@@ -18,8 +18,10 @@ class StartForm extends React.Component {
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDownload = this.handleDownload.bind(this);
-    this.onSelectedChange = this.onSelectedChange.bind(this);
-    this.onNameChange = this.onNameChange.bind(this);
+    this.onTrackSelectedChange = this.onTrackSelectedChange.bind(this);
+    this.onTrackNameChange = this.onTrackNameChange.bind(this);
+    this.onAllTracksSelectedChange = this.onAllTracksSelectedChange.bind(this);
+    this.nullIfNoTracks = this.nullIfNoTracks.bind(this);
   }
 
   handleChange(event) {
@@ -72,18 +74,30 @@ class StartForm extends React.Component {
     });
   }
 
-  onSelectedChange(event) {
+  onTrackSelectedChange(event) {
     let tracks = this.state.tracks;
     let index = event.target.getAttribute("index");
     tracks[index].selected = event.target.checked;
     this.setState({tracks: tracks});
   }
 
-  onNameChange(event) {
+  onTrackNameChange(event) {
     let tracks = this.state.tracks;
     let index = event.target.getAttribute("index");
     tracks[index].name = event.target.value;
     this.setState({tracks: tracks});
+  }
+  
+  onAllTracksSelectedChange(event) {
+    let tracks = this.state.tracks;
+    tracks.forEach(t => t.selected = event.target.checked);
+    this.setState({tracks: tracks});
+  }
+  
+  nullIfNoTracks(element) {
+    return this.state.tracks.length > 0
+      ? element
+      : null;
   }
 
   render() {
@@ -96,6 +110,16 @@ class StartForm extends React.Component {
         </label>
         <input type="submit" value="submit" />
         <br/>
+        {this.nullIfNoTracks(
+            <div>
+              <input checked={this.state.tracks.every(t => t.selected)}
+                     onChange={this.onAllTracksSelectedChange}
+                     type="checkbox"
+                     name="changeAllSelection"
+                     id="changeAllSelection"
+              />
+              <label htmlFor="changeAllSelection">Select / unselect all</label>
+            </div>)}
         <ul>
         {
           // TODO use better key
@@ -103,8 +127,8 @@ class StartForm extends React.Component {
             <li key={index}>
               <VideoSection
                 index={index}
-                onSelectedChange={this.onSelectedChange}
-                onNameChange={this.onNameChange}
+                onSelectedChange={this.onTrackSelectedChange}
+                onNameChange={this.onTrackNameChange}
                 isChecked={track.selected}
                 value={track.name}
                 startTime={track.start}
@@ -114,9 +138,8 @@ class StartForm extends React.Component {
             ))
         }
         </ul>
-        {this.state.tracks.length > 0
-          ? <button onClick={this.handleDownload}>download</button>
-          : null}  
+        {this.nullIfNoTracks(
+          <button onClick={this.handleDownload}>download</button>)}  
       </form>
     );
   }
