@@ -102,13 +102,13 @@ class StartForm extends React.Component {
 
   render() {
     return (
-      <form onSubmit={this.handleSubmit}>
+      <div>
         <label>
           Enter a YouTube link:
           <input onChange={this.handleChange}>
           </input>
         </label>
-        <input type="submit" value="submit" />
+        <button onClick={this.handleSubmit}>submit</button>
         <br/>
         {this.nullIfNoTracks(
             <div>
@@ -140,7 +140,7 @@ class StartForm extends React.Component {
         </ul>
         {this.nullIfNoTracks(
           <button onClick={this.handleDownload}>download</button>)}  
-      </form>
+      </div>
     );
   }
 }
@@ -153,8 +153,9 @@ ReactDOM.render(
 );
 
 // TODO
-// - Show track lengths with their names
-// - Button to download all selected tracks (as e.g. zip)
+// - give better downloaded filename; at least make it has extension .zip
+// - large downloads sometimes fail in server
+// - should probably cache videoId after initial track fetch since it's used in state by download button
 // - Button alongside each track to download separately
 // - Show entire video name as it's own track
 // - More error handling
