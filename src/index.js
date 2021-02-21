@@ -65,9 +65,14 @@ class StartForm extends React.Component {
     })
     .then( res => res.blob() )
     .then( blob => {
-      // TODO set filename of downloaded file
-      var file = window.URL.createObjectURL(blob);
-      window.location.assign(file);
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = "files.zip";
+      link.target = '_blank';
+      link.setAttribute("type", "hidden");
+      document.body.appendChild(link); // needed for firefox (?)
+      link.click();
+      link.remove();
     })
     .catch((error) => {
       console.error('Error:', error);
@@ -153,9 +158,11 @@ ReactDOM.render(
 );
 
 // TODO
-// - give better downloaded filename; at least make it has extension .zip
-// - downloads sometimes fail in server during sectioning where it can't find some file
+// - give better downloaded filename, based on video name (editable?)
+// - loading icon while download request is working
 // - Button alongside each track to download separately
-// - Show entire video name as it's own track
+// - Show entire video name as it's own track that can  e downloaded
+// - add links on each track that go to video at that section
+// - client validation and/or cleaning of filenames?
 // - More error handling
 // - Support mp3 downloads with metadata, e.g. artist/album/song ?
