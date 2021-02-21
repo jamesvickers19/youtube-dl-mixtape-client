@@ -1,6 +1,8 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
+import Loader from "react-loader-spinner";
 import VideoSection from './VideoSection'
 import reportWebVitals from './reportWebVitals';
 
@@ -22,6 +24,7 @@ class StartForm extends React.Component {
     this.onTrackNameChange = this.onTrackNameChange.bind(this);
     this.onAllTracksSelectedChange = this.onAllTracksSelectedChange.bind(this);
     this.nullIfNoTracks = this.nullIfNoTracks.bind(this);
+    this.downloadSpinner = this.downloadSpinner.bind(this);
   }
 
   handleChange(event) {
@@ -56,6 +59,7 @@ class StartForm extends React.Component {
       'video-id': this.state.fetchedVideoId,
       'sections': this.state.tracks.filter(t => t.selected)
     };
+    this.setState({downloading: true});
     fetch(`${serverURL}/download`, {
       method: 'POST',
       headers: {
@@ -76,6 +80,9 @@ class StartForm extends React.Component {
     })
     .catch((error) => {
       console.error('Error:', error);
+    })
+    .finally(() => {
+      this.setState({downloading: false});
     });
   }
 
@@ -103,6 +110,17 @@ class StartForm extends React.Component {
     return this.state.tracks.length > 0
       ? element
       : null;
+  }
+
+  downloadSpinner() {
+    if (this.state.downloading) {
+      return (
+        <Loader
+          type="Watch"
+          color="#00BFFF"
+          height={50}
+          width={50}/>);
+    }
   }
 
   render() {
@@ -144,7 +162,8 @@ class StartForm extends React.Component {
         }
         </ul>
         {this.nullIfNoTracks(
-          <button onClick={this.handleDownload}>download</button>)}  
+          <button onClick={this.handleDownload}>download</button>)}
+        {this.downloadSpinner()}
       </div>
     );
   }
