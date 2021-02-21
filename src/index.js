@@ -158,10 +158,9 @@ ReactDOM.render(
 );
 
 // TODO
-// - give better downloaded filename, based on video name (editable?)
+// - Show entire video name as it's own track that can be downloaded; make downloaded zip file have this name
 // - loading icon while download request is working
 // - Button alongside each track to download separately
-// - Show entire video name as it's own track that can  e downloaded
 // - add links on each track that go to video at that section
 // - client validation and/or cleaning of filenames?
 // - More error handling
