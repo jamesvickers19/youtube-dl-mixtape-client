@@ -63,8 +63,14 @@ class StartForm extends React.Component {
 
   handleDownloadEntireVideo(event) {
     let videoId = this.getVideoId();
-    console.log(`download entire video ${videoId}`);
-    // TODO request new route that just downloads the whole video
+    const link = document.createElement('a');
+    link.href = `${serverURL}/download/${videoId}`;
+    link.target = '_blank';
+    link.setAttribute("type", "hidden");
+    document.body.appendChild(link); // needed for firefox (?)
+    link.click();
+    link.remove();
+    event.preventDefault();
   }
 
   handleDownload(event) {
