@@ -16,14 +16,15 @@ const serverURL = "http://localhost:8080";
 class StartForm extends React.Component {
   constructor(props) {
     super(props);
-    this.state = {url: '', tracks: []};
+    this.state = {url: '', sections: []}; 
     this.handleChange = this.handleChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
+    this.handleDownloadEntireVideo = this.handleDownloadEntireVideo.bind(this);
     this.handleDownload = this.handleDownload.bind(this);
-    this.onTrackSelectedChange = this.onTrackSelectedChange.bind(this);
-    this.onTrackNameChange = this.onTrackNameChange.bind(this);
-    this.onAllTracksSelectedChange = this.onAllTracksSelectedChange.bind(this);
-    this.nullIfNoTracks = this.nullIfNoTracks.bind(this);
+    this.onSectionSelectedChange = this.onSectionSelectedChange.bind(this);
+    this.onSectionNameChange = this.onSectionNameChange.bind(this);
+    this.onAllSectionsSelectedChange = this.onAllSectionsSelectedChange.bind(this);
+    this.nullIfNoSections = this.nullIfNoSections.bind(this);
     this.downloadSpinner = this.downloadSpinner.bind(this);
   }
 
@@ -46,18 +47,30 @@ class StartForm extends React.Component {
 
     fetch(`${serverURL}/sections/${videoId}`)
       .then(response => response.json())
-      .then(tracks => this.setState({
-        tracks: tracks.map(t => ({ ...t, selected: true})),
+      .then(data => this.setState({
+        videoInfo: {
+          name: data.name,
+          start: 0,
+          end: data.length,
+          selected: true
+        },
+        sections: data.sections.map(t => ({ ...t, selected: true})),
         fetchedVideoId: videoId
       }))
     .catch(error => console.log(`Request to ${serverURL} failed: ${error}`));
     event.preventDefault();
   }
 
+  handleDownloadEntireVideo(event) {
+    let videoId = this.getVideoId();
+    console.log(`download entire video ${videoId}`);
+    // TODO request new route that just downloads the whole video
+  }
+
   handleDownload(event) {
     let requestData = {
       'video-id': this.state.fetchedVideoId,
-      'sections': this.state.tracks.filter(t => t.selected)
+      'sections': this.state.sections.filter(t => t.selected)
     };
     this.setState({downloading: true});
     fetch(`${serverURL}/download`, {
@@ -86,28 +99,28 @@ class StartForm extends React.Component {
     });
   }
 
-  onTrackSelectedChange(event) {
-    let tracks = this.state.tracks;
+  onSectionSelectedChange(event) {
+    let sections = this.state.sections;
     let index = event.target.getAttribute("index");
-    tracks[index].selected = event.target.checked;
-    this.setState({tracks: tracks});
+    sections[index].selected = event.target.checked;
+    this.setState({sections: sections});
   }
 
-  onTrackNameChange(event) {
-    let tracks = this.state.tracks;
+  onSectionNameChange(event) {
+    let sections = this.state.sections;
     let index = event.target.getAttribute("index");
-    tracks[index].name = event.target.value;
-    this.setState({tracks: tracks});
+    sections[index].name = event.target.value;
+    this.setState({sections: sections});
   }
   
-  onAllTracksSelectedChange(event) {
-    let tracks = this.state.tracks;
-    tracks.forEach(t => t.selected = event.target.checked);
-    this.setState({tracks: tracks});
+  onAllSectionsSelectedChange(event) {
+    let sections = this.state.sections;
+    sections.forEach(t => t.selected = event.target.checked);
+    this.setState({sections: sections});
   }
   
-  nullIfNoTracks(element) {
-    return this.state.tracks.length > 0
+  nullIfNoSections(element) {
+    return this.state.sections.length > 0
       ? element
       : null;
   }
@@ -133,10 +146,16 @@ class StartForm extends React.Component {
         </label>
         <button onClick={this.handleSubmit}>submit</button>
         <br/>
-        {this.nullIfNoTracks(
+        {
+          this.state.fetchedVideoId == null
+            ? null
+            : (<button onClick={this.handleDownloadEntireVideo}>Download entire video</button>) 
+        }
+        <br/>
+        {this.nullIfNoSections(
             <div>
-              <input checked={this.state.tracks.every(t => t.selected)}
-                     onChange={this.onAllTracksSelectedChange}
+              <input checked={this.state.sections.every(t => t.selected)}
+                     onChange={this.onAllSectionsSelectedChange}
                      type="checkbox"
                      name="changeAllSelection"
                      id="changeAllSelection"
@@ -145,23 +164,22 @@ class StartForm extends React.Component {
             </div>)}
         <ul>
         {
-          // TODO use better key
-          this.state.tracks.map((track, index) => (
+          this.state.sections.map((section, index) => (
             <li key={index}>
               <VideoSection
                 index={index}
-                onSelectedChange={this.onTrackSelectedChange}
-                onNameChange={this.onTrackNameChange}
-                isChecked={track.selected}
-                value={track.name}
-                startTime={track.start}
-                endTime={track.end}
+                onSelectedChange={this.onSectionSelectedChange}
+                onNameChange={this.onSectionNameChange}
+                isChecked={section.selected}
+                value={section.name}
+                startTime={section.start}
+                endTime={section.end}
               />
             </li>
-            ))
+          ))
         }
         </ul>
-        {this.nullIfNoTracks(
+        {this.nullIfNoSections(
           <button onClick={this.handleDownload}>download</button>)}
         {this.downloadSpinner()}
       </div>
@@ -177,10 +195,9 @@ ReactDOM.render(
 );
 
 // TODO
-// - Show entire video name as it's own track that can be downloaded; make downloaded zip file have this name
-// - loading icon while download request is working
-// - Button alongside each track to download separately
-// - add links on each track that go to video at that section
+// - Show entire video name as it's own section that can be downloaded; make downloaded zip file have this name
+// - disable some controls (like download) while request is working
+// - Button alongside each section to download separately
+// - add links on each section that go to video at that section
 // - client validation and/or cleaning of filenames?
 // - More error handling
-// - Support mp3 downloads with metadata, e.g. artist/album/song ?
