@@ -22,17 +22,6 @@ function download(blob, name) {
   link.remove();
 }
 
-async function getVideoTitle(videoId, defaultTitle) {
-  let requestUrl = `${serverURL}/title/${videoId}`;
-  try {
-    const response = await fetch(requestUrl);
-    return await response.text();
-  } catch (error) {
-    console.log(`Request to ${requestUrl} failed: ${error}`);
-    return defaultTitle;
-  }
-}
-
 const serverURL = "http://localhost:8080";
 
 class StartForm extends React.Component {
@@ -71,7 +60,7 @@ class StartForm extends React.Component {
       .then(response => response.json())
       .then(data => this.setState({
         videoInfo: {
-          name: data.name,
+          title: data.title,
           start: 0,
           end: data.length,
           selected: true
@@ -85,9 +74,9 @@ class StartForm extends React.Component {
 
   async handleDownloadEntireVideo(event) {
     let videoId = this.getVideoId();
+    let videoTitle = this.state.videoInfo.title;
     let requestUrl = `${serverURL}/download/${videoId}`;
     this.setState({downloading: true});
-    let videoTitle = await getVideoTitle(videoId, "video_name");
     fetch(requestUrl)
       .then(res => res.blob())
       .then(blob => download(blob, `${videoTitle}.m4a`))
@@ -169,7 +158,7 @@ class StartForm extends React.Component {
         {
           this.state.fetchedVideoId == null
             ? null
-            : (<button onClick={this.handleDownloadEntireVideo}>Download entire video</button>) 
+            : (<button onClick={this.handleDownloadEntireVideo}>Download entire video {this.state.videoInfo.title}</button>) 
         }
         <br/>
         {this.nullIfNoSections(
@@ -216,9 +205,7 @@ ReactDOM.render(
 
 // TODO
 // - downloading entire video fixes:
-//    - make downloaded video file have video filename; could make editable
 //    - show entire video name somewhere after 'submit'
-//    - make the download not open a new tab?
 // - disable some controls (like download) while request is working
 // - Button alongside each section to download separately
 // - add links on each section that go to video at that section
