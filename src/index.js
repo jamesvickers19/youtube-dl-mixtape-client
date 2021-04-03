@@ -11,6 +11,17 @@ import reportWebVitals from './reportWebVitals';
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 
+function download(blob, name) {
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = name;
+  link.target = '_blank';
+  link.setAttribute("type", "hidden");
+  document.body.appendChild(link); // needed for firefox (?)
+  link.click();
+  link.remove();
+}
+
 const serverURL = "http://localhost:8080";
 
 class StartForm extends React.Component {
@@ -63,13 +74,11 @@ class StartForm extends React.Component {
 
   handleDownloadEntireVideo(event) {
     let videoId = this.getVideoId();
-    const link = document.createElement('a');
-    link.href = `${serverURL}/download/${videoId}`;
-    link.target = '_blank';
-    link.setAttribute("type", "hidden");
-    document.body.appendChild(link); // needed for firefox (?)
-    link.click();
-    link.remove();
+    let requestUrl = `${serverURL}/download/${videoId}`;
+    fetch(requestUrl)
+      .then(res => res.blob())
+      .then(blob => download(blob, "video_name.m4a")) // TODO use video name; return in request?
+      .catch(error => console.log(`Request to ${requestUrl} failed: ${error}`));
     event.preventDefault();
   }
 
@@ -87,16 +96,7 @@ class StartForm extends React.Component {
       body: JSON.stringify(requestData)
     })
     .then( res => res.blob() )
-    .then( blob => {
-      const link = document.createElement('a');
-      link.href = URL.createObjectURL(blob);
-      link.download = "files.zip";
-      link.target = '_blank';
-      link.setAttribute("type", "hidden");
-      document.body.appendChild(link); // needed for firefox (?)
-      link.click();
-      link.remove();
-    })
+    .then( blob => download(blob, "files.zip"))
     .catch((error) => {
       console.error('Error:', error);
     })
@@ -201,9 +201,13 @@ ReactDOM.render(
 );
 
 // TODO
-// - Show entire video name as it's own section that can be downloaded; make downloaded zip file have this name
+// - downloading entire video fixes:
+//    - make downloaded video file have video filename; could make editable
+//    - show entire video name somewhere after 'submit'
+//    - make the download not open a new tab?
 // - disable some controls (like download) while request is working
 // - Button alongside each section to download separately
 // - add links on each section that go to video at that section
 // - client validation and/or cleaning of filenames?
+// - handling of deleting old files, looking them up in cache...maybe more of a deployment thing
 // - More error handling
