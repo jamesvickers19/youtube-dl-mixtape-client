@@ -183,6 +183,7 @@ class StartForm extends React.Component {
                 value={section.name}
                 startTime={section.start}
                 endTime={section.end}
+                videoId={this.state.fetchedVideoId}
               />
             </li>
           ))
@@ -204,11 +205,11 @@ ReactDOM.render(
 );
 
 // TODO
-// - downloading entire video fixes:
-//    - show entire video name somewhere after 'submit'
+// - downloading entire video:
+//    - show entire video name; make editable?
+//    - could also show video thumbnail, other info like date
 // - disable some controls (like download) while request is working
 // - Button alongside each section to download separately
-// - add links on each section that go to video at that section
 // - client validation and/or cleaning of filenames?
 // - handling of deleting old files, looking them up in cache...maybe more of a deployment thing
 // - More error handling

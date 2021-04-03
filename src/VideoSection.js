@@ -16,7 +16,9 @@ export const VideoSection = props => {
           value={props.value}
           onChange={props.onNameChange}
         />
-        <label>({toTimeString(props.startTime)} - {toTimeString(props.endTime)})</label>
+        <a href={`https://youtube.com/watch?v=${props.videoId}&t=${props.startTime}`} target="_blank" rel="noreferrer">
+          {toTimeString(props.startTime)} - {toTimeString(props.endTime)}
+        </a>
       </div>
     )
 }
