@@ -75,10 +75,12 @@ class StartForm extends React.Component {
   handleDownloadEntireVideo(event) {
     let videoId = this.getVideoId();
     let requestUrl = `${serverURL}/download/${videoId}`;
+    this.setState({downloading: true});
     fetch(requestUrl)
       .then(res => res.blob())
       .then(blob => download(blob, "video_name.m4a")) // TODO use video name; return in request?
-      .catch(error => console.log(`Request to ${requestUrl} failed: ${error}`));
+      .catch(error => console.log(`Request to ${requestUrl} failed: ${error}`))
+      .finally(() => this.setState({downloading: false}));
     event.preventDefault();
   }
 
