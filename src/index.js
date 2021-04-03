@@ -22,6 +22,17 @@ function download(blob, name) {
   link.remove();
 }
 
+async function getVideoTitle(videoId, defaultTitle) {
+  let requestUrl = `${serverURL}/title/${videoId}`;
+  try {
+    const response = await fetch(requestUrl);
+    return await response.text();
+  } catch (error) {
+    console.log(`Request to ${requestUrl} failed: ${error}`);
+    return defaultTitle;
+  }
+}
+
 const serverURL = "http://localhost:8080";
 
 class StartForm extends React.Component {
@@ -72,13 +83,14 @@ class StartForm extends React.Component {
     event.preventDefault();
   }
 
-  handleDownloadEntireVideo(event) {
+  async handleDownloadEntireVideo(event) {
     let videoId = this.getVideoId();
     let requestUrl = `${serverURL}/download/${videoId}`;
     this.setState({downloading: true});
+    let videoTitle = await getVideoTitle(videoId, "video_name");
     fetch(requestUrl)
       .then(res => res.blob())
-      .then(blob => download(blob, "video_name.m4a")) // TODO use video name; return in request?
+      .then(blob => download(blob, `${videoTitle}.m4a`))
       .catch(error => console.log(`Request to ${requestUrl} failed: ${error}`))
       .finally(() => this.setState({downloading: false}));
     event.preventDefault();
