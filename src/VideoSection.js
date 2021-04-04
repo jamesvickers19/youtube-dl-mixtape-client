@@ -6,12 +6,14 @@ export const VideoSection = props => {
     return (
       <div>
         <input
+          disabled={props.disabled}
           index={props.index}
           onChange={props.onSelectedChange}
           type="checkbox"
           checked={props.isChecked}           
         />
         <input
+          disabled={props.disabled}
           index={props.index}
           value={props.value}
           onChange={props.onNameChange}

@@ -162,7 +162,9 @@ class StartForm extends React.Component {
               <div>
                 <label>Video: {this.state.videoInfo.title}</label>
                 <br></br>
-                <button onClick={this.handleDownloadEntireVideo}>Download entire video</button>
+                <button disabled={this.state.downloading} onClick={this.handleDownloadEntireVideo}>
+                  Download entire video
+                </button>
               </div>
               ) 
         }
@@ -174,6 +176,7 @@ class StartForm extends React.Component {
                      type="checkbox"
                      name="changeAllSelection"
                      id="changeAllSelection"
+                     disabled={this.state.downloading}
               />
               <label htmlFor="changeAllSelection">Select / unselect all</label>
             </div>)}
@@ -190,13 +193,14 @@ class StartForm extends React.Component {
                 startTime={section.start}
                 endTime={section.end}
                 videoId={this.state.fetchedVideoId}
+                disabled={this.state.downloading}
               />
             </li>
           ))
         }
         </ul>
         {this.nullIfNoSections(
-          <button onClick={this.handleDownload}>download</button>)}
+          <button disabled={this.state.downloading} onClick={this.handleDownload}>download</button>)}
         {this.downloadSpinner()}
       </div>
     );
@@ -211,7 +215,6 @@ ReactDOM.render(
 );
 
 // TODO
-// - disable some controls (like download) while request is working
 // - Button alongside each section to download separately
 // - More error handling like bad url's
 // - styling
