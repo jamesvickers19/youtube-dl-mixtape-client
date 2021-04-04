@@ -153,7 +153,7 @@ class StartForm extends React.Component {
           <input onChange={this.handleChange}>
           </input>
         </label>
-        <button onClick={this.handleSubmit}>submit</button>
+        <button disabled={!(this.state.url && this.state.url.trim())} onClick={this.handleSubmit}>submit</button>
         <br/>
         {
           this.state.fetchedVideoId == null
@@ -215,8 +215,9 @@ ReactDOM.render(
 );
 
 // TODO
-// - Button alongside each section to download separately
 // - More error handling like bad url's
+// - Button alongside each section to download separately
 // - styling
 // - client validation and/or cleaning of filenames?
 // - handling of deleting old files, looking them up in cache...maybe more of a deployment thing
+//    - maybe instead the server should do everything in memory...
