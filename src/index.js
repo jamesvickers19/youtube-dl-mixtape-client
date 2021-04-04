@@ -158,7 +158,13 @@ class StartForm extends React.Component {
         {
           this.state.fetchedVideoId == null
             ? null
-            : (<button onClick={this.handleDownloadEntireVideo}>Download entire video {this.state.videoInfo.title}</button>) 
+            : (
+              <div>
+                <label>Video: {this.state.videoInfo.title}</label>
+                <br></br>
+                <button onClick={this.handleDownloadEntireVideo}>Download entire video</button>
+              </div>
+              ) 
         }
         <br/>
         {this.nullIfNoSections(
@@ -205,11 +211,9 @@ ReactDOM.render(
 );
 
 // TODO
-// - downloading entire video:
-//    - show entire video name; make editable?
-//    - could also show video thumbnail, other info like date
 // - disable some controls (like download) while request is working
 // - Button alongside each section to download separately
+// - More error handling like bad url's
+// - styling
 // - client validation and/or cleaning of filenames?
 // - handling of deleting old files, looking them up in cache...maybe more of a deployment thing
-// - More error handling
