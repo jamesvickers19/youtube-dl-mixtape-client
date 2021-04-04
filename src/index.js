@@ -22,13 +22,28 @@ function download(blob, name) {
   link.remove();
 }
 
+function getVideoId(text) {
+  const youtubeRegex = /^(?:https?:\/\/)?(?:www\.)?(?:youtu\.be\/|youtube\.com\/(?:embed\/|v\/|watch\?v=|watch\?.+&v=))((\w|-){11})(?:\S+)?$/;
+  if (!text.match(youtubeRegex))
+  {
+    return null;
+  }
+  if (!text.startsWith('http://www.') && !text.startsWith('https://www.'))
+  {
+    text = 'https://www.' + text;
+  }
+  const url = new URL(text);
+  const urlParams = new URLSearchParams(url.search);
+  return urlParams.get('v');
+}
+
 const serverURL = "http://localhost:8080";
 
 class StartForm extends React.Component {
   constructor(props) {
     super(props);
     this.state = {url: '', sections: []}; 
-    this.handleChange = this.handleChange.bind(this);
+    this.handleVideoUrlInputChange = this.handleVideoUrlInputChange.bind(this);
     this.handleSubmit = this.handleSubmit.bind(this);
     this.handleDownloadEntireVideo = this.handleDownloadEntireVideo.bind(this);
     this.handleDownload = this.handleDownload.bind(this);
@@ -39,24 +54,18 @@ class StartForm extends React.Component {
     this.downloadSpinner = this.downloadSpinner.bind(this);
   }
 
-  handleChange(event) {
-    this.setState({url: event.target.value});
-  }
-
-  getVideoId() {
-    const url = new URL(this.state.url);
-    const urlParams = new URLSearchParams(url.search);
-    return urlParams.get('v');
+  handleVideoUrlInputChange(event) {
+    let url = event.target.value;
+    let videoId = getVideoId(url);
+    this.setState({
+      url: url,
+      videoId: videoId
+    });
   }
 
   handleSubmit(event) {
-    let videoId = this.getVideoId();
-    if (videoId === null) {
-      alert(`Url '${this.state.url}' is not a YouTube video`);
-      return;
-    }
-
-    fetch(`${serverURL}/sections/${videoId}`)
+    let fetchedVideoId = this.state.videoId;
+    fetch(`${serverURL}/sections/${fetchedVideoId}`)
       .then(response => response.json())
       .then(data => this.setState({
         videoInfo: {
@@ -66,7 +75,7 @@ class StartForm extends React.Component {
           selected: true
         },
         sections: data.sections.map(t => ({ ...t, selected: true})),
-        fetchedVideoId: videoId
+        fetchedVideoId: fetchedVideoId
       }))
     .catch(error => console.log(`Request to ${serverURL} failed: ${error}`));
     event.preventDefault();
@@ -150,10 +159,10 @@ class StartForm extends React.Component {
       <div>
         <label>
           Enter a YouTube link:
-          <input onChange={this.handleChange}>
+          <input onChange={this.handleVideoUrlInputChange}>
           </input>
         </label>
-        <button disabled={!(this.state.url && this.state.url.trim())} onClick={this.handleSubmit}>submit</button>
+        <button disabled={!this.state.videoId} onClick={this.handleSubmit}>submit</button>
         <br/>
         {
           this.state.fetchedVideoId == null
@@ -215,9 +224,12 @@ ReactDOM.render(
 );
 
 // TODO
-// - More error handling like bad url's
+// - error handling:
+//   - non-existent video
+//   - live video
 // - Button alongside each section to download separately
 // - styling
 // - client validation and/or cleaning of filenames?
+// - allow downloading audio or video; format and quality selection
 // - handling of deleting old files, looking them up in cache...maybe more of a deployment thing
 //    - maybe instead the server should do everything in memory...
