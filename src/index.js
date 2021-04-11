@@ -82,9 +82,8 @@ class StartForm extends React.Component {
   }
 
   async handleDownloadEntireVideo(event) {
-    let videoId = this.getVideoId();
     let videoTitle = this.state.videoInfo.title;
-    let requestUrl = `${serverURL}/download/${videoId}`;
+    let requestUrl = `${serverURL}/download/${this.state.videoId}`;
     this.setState({downloading: true});
     fetch(requestUrl)
       .then(res => res.blob())
@@ -233,3 +232,7 @@ ReactDOM.render(
 // - allow downloading audio or video; format and quality selection
 // - handling of deleting old files, looking them up in cache...maybe more of a deployment thing
 //    - maybe instead the server should do everything in memory...
+//      - some private code might do it: https://github.com/sealedtx/java-youtube-downloader/blob/master/src/main/java/com/github/kiulian/downloader/model/YoutubeVideo.java
+//        - could submit a PR: rework private YoutubeVideo.downloadStraight to be public
+//        - could also just rewrite the needed parts of this library in Clojure
+//      - can possibly manipuate the data using JAVE library: http://www.sauronsoftware.it/projects/jave/manual.php
