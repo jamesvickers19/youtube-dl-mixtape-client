@@ -64,6 +64,11 @@ class StartForm extends React.Component {
   }
 
   handleSubmit(event) {
+    let errorMsg = "";
+    this.setState({
+      errorMessage: errorMsg,
+      downloading: true
+    });
     let fetchedVideoId = this.state.videoId;
     fetch(`${serverURL}/sections/${fetchedVideoId}`)
       .then(response => response.json())
@@ -77,28 +82,53 @@ class StartForm extends React.Component {
         sections: data.sections.map(t => ({ ...t, selected: true})),
         fetchedVideoId: fetchedVideoId
       }))
-    .catch(error => console.log(`Request to ${serverURL} failed: ${error}`));
+    .catch(e => { 
+      console.log(`Request to ${serverURL} failed: ${e}`);
+      errorMsg = `Error getting video chapters: ${e.message}`;
+    })
+    .finally(() => {
+      this.setState({
+        downloading: false,
+        errorMessage: errorMsg,
+      });
+    });
     event.preventDefault();
   }
 
   async handleDownloadEntireVideo(event) {
+    let errorMsg = "";
+    this.setState({
+      errorMessage: errorMsg,
+      downloading: true
+    });
     let videoTitle = this.state.videoInfo.title;
     let requestUrl = `${serverURL}/download/${this.state.videoId}`;
-    this.setState({downloading: true});
     fetch(requestUrl)
       .then(res => res.blob())
       .then(blob => download(blob, `${videoTitle}.m4a`))
-      .catch(error => console.log(`Request to ${requestUrl} failed: ${error}`))
-      .finally(() => this.setState({downloading: false}));
+      .catch(e => {
+        console.log(`Request to ${requestUrl} failed: ${e}`);
+        errorMsg = `Error downloading video: ${e.message}`;
+      })
+      .finally(() => {
+        this.setState({
+          downloading: false,
+          errorMessage: errorMsg,
+        });
+      });
     event.preventDefault();
   }
 
   handleDownload(event) {
+    let errorMsg = "";
     let requestData = {
       'video-id': this.state.fetchedVideoId,
       'sections': this.state.sections.filter(t => t.selected)
     };
-    this.setState({downloading: true});
+    this.setState({
+      errorMessage: errorMsg,
+      downloading: true
+    });
     fetch(`${serverURL}/download`, {
       method: 'POST',
       headers: {
@@ -108,11 +138,15 @@ class StartForm extends React.Component {
     })
     .then( res => res.blob() )
     .then( blob => download(blob, "files.zip"))
-    .catch((error) => {
-      console.error('Error:', error);
+    .catch((e) => {
+      console.error('Error in handleDownload:', e);
+      errorMsg = `Error downloading video chapters: ${e.message}`;
     })
     .finally(() => {
-      this.setState({downloading: false});
+      this.setState({
+        downloading: false,
+        errorMessage: errorMsg,
+      });
     });
   }
 
@@ -163,6 +197,7 @@ class StartForm extends React.Component {
         </label>
         <button disabled={!this.state.videoId} onClick={this.handleSubmit}>submit</button>
         <br/>
+        <label>{this.state.errorMessage}</label>
         {
           this.state.fetchedVideoId == null
             ? null
@@ -223,16 +258,10 @@ ReactDOM.render(
 );
 
 // TODO
-// - error handling:
-//   - non-existent video
-//   - live video
-// - Button alongside each section to download separately
+// - try things like non-existent youtube video, live video; should show error on page somewhere
 // - styling
 // - client validation and/or cleaning of filenames?
 // - allow downloading audio or video; format and quality selection
-// - handling of deleting old files, looking them up in cache...maybe more of a deployment thing
-//    - maybe instead the server should do everything in memory...
-//      - some private code might do it: https://github.com/sealedtx/java-youtube-downloader/blob/master/src/main/java/com/github/kiulian/downloader/model/YoutubeVideo.java
-//        - could submit a PR: rework private YoutubeVideo.downloadStraight to be public
-//        - could also just rewrite the needed parts of this library in Clojure
-//      - can possibly manipuate the data using JAVE library: http://www.sauronsoftware.it/projects/jave/manual.php
+// - Button alongside each section to download separately
+// - integration tests for clien (selenium ?)
+// - more integration tests for server
