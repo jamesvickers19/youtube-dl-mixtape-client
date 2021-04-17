@@ -11,6 +11,8 @@ import reportWebVitals from './reportWebVitals';
 // or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
 reportWebVitals();
 
+const serverURL = "http://localhost:8080";
+
 function download(blob, name) {
   const link = document.createElement('a');
   link.href = URL.createObjectURL(blob);
@@ -37,8 +39,6 @@ function getVideoId(text) {
   return urlParams.get('v');
 }
 
-const serverURL = "http://localhost:8080";
-
 class StartForm extends React.Component {
   constructor(props) {
     super(props);
@@ -52,6 +52,7 @@ class StartForm extends React.Component {
     this.onAllSectionsSelectedChange = this.onAllSectionsSelectedChange.bind(this);
     this.nullIfNoSections = this.nullIfNoSections.bind(this);
     this.downloadSpinner = this.downloadSpinner.bind(this);
+    this.request = this.request.bind(this);
   }
 
   handleVideoUrlInputChange(event) {
@@ -63,91 +64,70 @@ class StartForm extends React.Component {
     });
   }
 
-  handleSubmit(event) {
+  request(endpoint, responseHandler, requestParams = null) {
     let errorMsg = "";
     this.setState({
       errorMessage: errorMsg,
       downloading: true
     });
-    let fetchedVideoId = this.state.videoId;
-    fetch(`${serverURL}/sections/${fetchedVideoId}`)
-      .then(response => response.json())
-      .then(data => this.setState({
-        videoInfo: {
-          title: data.title,
-          start: 0,
-          end: data.length,
-          selected: true
-        },
-        sections: data.sections.map(t => ({ ...t, selected: true})),
-        fetchedVideoId: fetchedVideoId
-      }))
-    .catch(e => { 
-      console.log(`Request to ${serverURL} failed: ${e}`);
-      errorMsg = `Error getting video chapters: ${e.message}`;
-    })
-    .finally(() => {
-      this.setState({
-        downloading: false,
-        errorMessage: errorMsg,
-      });
-    });
-    event.preventDefault();
-  }
-
-  async handleDownloadEntireVideo(event) {
-    let errorMsg = "";
-    this.setState({
-      errorMessage: errorMsg,
-      downloading: true
-    });
-    let videoTitle = this.state.videoInfo.title;
-    let requestUrl = `${serverURL}/download/${this.state.videoId}`;
-    fetch(requestUrl)
-      .then(res => res.blob())
-      .then(blob => download(blob, `${videoTitle}.m4a`))
-      .catch(e => {
-        console.log(`Request to ${requestUrl} failed: ${e}`);
-        errorMsg = `Error downloading video: ${e.message}`;
+    fetch(`${serverURL}${endpoint}`, requestParams)
+      .then(response => {
+        if (!response.ok) {
+          throw response;
+        }
+        return response;
       })
+      .then(response => responseHandler(response))
+      .catch(e => e.body().then(msg => { 
+        console.log(`Request to ${serverURL} failed: ${msg}`);
+        errorMsg = `Error: ${msg}`;
+      }))
       .finally(() => {
         this.setState({
           downloading: false,
           errorMessage: errorMsg,
         });
       });
+  }
+
+  handleSubmit(event) {
+    let fetchedVideoId = this.state.videoId;
+    this.request(`/sections/${fetchedVideoId}`, response => response.json().then(data => this.setState({
+      videoInfo: {
+        title: data.title,
+        start: 0,
+        end: data.length,
+        selected: true
+      },
+      sections: data.sections.map(t => ({ ...t, selected: true})),
+      fetchedVideoId: fetchedVideoId
+    })));
+    event.preventDefault();
+  }
+
+  handleDownloadEntireVideo(event) {
+    let videoId = this.state.videoId;
+    let videoTitle = this.state.videoInfo.title;
+    this.request(
+      `/download/${videoId}`,
+      response => response.blob().then(blob => download(blob, `${videoTitle}.m4a`)));
     event.preventDefault();
   }
 
   handleDownload(event) {
-    let errorMsg = "";
     let requestData = {
       'video-id': this.state.fetchedVideoId,
       'sections': this.state.sections.filter(t => t.selected)
     };
-    this.setState({
-      errorMessage: errorMsg,
-      downloading: true
-    });
-    fetch(`${serverURL}/download`, {
+    let requestParams = {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify(requestData)
-    })
-    .then( res => res.blob() )
-    .then( blob => download(blob, "files.zip"))
-    .catch((e) => {
-      console.error('Error in handleDownload:', e);
-      errorMsg = `Error downloading video chapters: ${e.message}`;
-    })
-    .finally(() => {
-      this.setState({
-        downloading: false,
-        errorMessage: errorMsg,
-      });
-    });
+      body: JSON.stringify(requestData),
+      headers: { 'Content-Type': 'application/json'}
+    };
+    this.request(
+      '/download',
+      response => response.blob().then(blob => download(blob, "files.zip")),
+      requestParams);
   }
 
   onSectionSelectedChange(event) {
@@ -258,10 +238,9 @@ ReactDOM.render(
 );
 
 // TODO
-// - try things like non-existent youtube video, live video; should show error on page somewhere
 // - styling
 // - client validation and/or cleaning of filenames?
 // - allow downloading audio or video; format and quality selection
 // - Button alongside each section to download separately
-// - integration tests for clien (selenium ?)
+// - integration tests for client (selenium ?)
 // - more integration tests for server
