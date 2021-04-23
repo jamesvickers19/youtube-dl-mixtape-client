@@ -186,7 +186,9 @@ class StartForm extends React.Component {
       <ul>
         {
           this.state.sections.map((section, index) => (
-            <li key={index}>
+            <li
+              style={{ listStyleType: "none" }} 
+              key={index}>
               <VideoSection
                 index={index}
                 onSelectedChange={this.onSectionSelectedChange}
@@ -219,25 +221,25 @@ class StartForm extends React.Component {
     }
     return (
       <Grid columns={"1fr"} rows={"1fr"}>
-        <Cell>
+        <Cell center>
           <h1>Youtube Downloader</h1>
         </Cell>
-        <Cell>
+        <Cell center>
           <label>Enter a YouTube link:{urlInput}</label>
           {submitBtn}
         </Cell>
-        <Cell>
+        <Cell center>
           {errorLabel}
           {this.downloadSpinner()}
         </Cell>
-        <Cell>{videoTitleLabel}</Cell>
-        <Cell>{downloadEntireVideoBtn}</Cell>
-        <Cell>{downloadBtn}</Cell>
-        <Cell>
+        <Cell center>{videoTitleLabel}</Cell>
+        <Cell center>{downloadEntireVideoBtn}</Cell>
+        <Cell center>{downloadBtn}</Cell>
+        <Cell center>
           {selectAllInput}
           {selectAllInputLabel}
         </Cell>
-        <Cell>{sectionsList}</Cell>
+        <Cell center>{sectionsList}</Cell>
       </Grid>
     );
   }
