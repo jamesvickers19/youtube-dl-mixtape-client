@@ -1,6 +1,7 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
+import { Grid, Cell } from "styled-css-grid";
 import "react-loader-spinner/dist/loader/css/react-spinner-loader.css";
 import Loader from "react-loader-spinner";
 import VideoSection from './VideoSection'
@@ -168,42 +169,21 @@ class StartForm extends React.Component {
   }
 
   render() {
-    return (
-      <div>
-        <label>
-          Enter a YouTube link:
-          <input onChange={this.handleVideoUrlInputChange}>
-          </input>
-        </label>
-        <button disabled={!this.state.videoId} onClick={this.handleSubmit}>submit</button>
-        <br/>
-        <label>{this.state.errorMessage}</label>
-        {
-          this.state.fetchedVideoId == null
-            ? null
-            : (
-              <div>
-                <label>Video: {this.state.videoInfo.title}</label>
-                <br></br>
-                <button disabled={this.state.downloading} onClick={this.handleDownloadEntireVideo}>
-                  Download entire video
-                </button>
-              </div>
-              ) 
-        }
-        <br/>
-        {this.nullIfNoSections(
-            <div>
-              <input checked={this.state.sections.every(t => t.selected)}
-                     onChange={this.onAllSectionsSelectedChange}
-                     type="checkbox"
-                     name="changeAllSelection"
-                     id="changeAllSelection"
-                     disabled={this.state.downloading}
-              />
-              <label htmlFor="changeAllSelection">Select / unselect all</label>
-            </div>)}
-        <ul>
+    let urlInput = (<input onChange={this.handleVideoUrlInputChange}/>);
+    let submitBtn = (<button disabled={!this.state.videoId} onClick={this.handleSubmit}>submit</button>);
+    let errorLabel = (<label>{this.state.errorMessage}</label>);
+    let selectAllInput = this.nullIfNoSections(
+      <input checked={this.state.sections.every(t => t.selected)}
+             onChange={this.onAllSectionsSelectedChange}
+             type="checkbox"
+             name="changeAllSelection"
+             id="changeAllSelection"
+             disabled={this.state.downloading}/>);
+    let selectAllInputLabel = this.nullIfNoSections(
+      <label htmlFor="changeAllSelection">Select / unselect all</label>
+    );
+    let sectionsList = (
+      <ul>
         {
           this.state.sections.map((section, index) => (
             <li key={index}>
@@ -222,8 +202,34 @@ class StartForm extends React.Component {
           ))
         }
         </ul>
-        {this.nullIfNoSections(
-          <button disabled={this.state.downloading} onClick={this.handleDownload}>download</button>)}
+    );
+    let downloadBtn = (
+      this.nullIfNoSections(
+        <button disabled={this.state.downloading} onClick={this.handleDownload}>download selected sections</button>)
+    );
+    let videoTitleLabel = null;
+    let downloadEntireVideoBtn = null;
+    if (this.state.fetchedVideoId != null) {
+      videoTitleLabel = (<label>Video: {this.state.videoInfo.title}</label>);
+      downloadEntireVideoBtn = (
+        <button disabled={this.state.downloading} onClick={this.handleDownloadEntireVideo}>
+                  Download entire video
+        </button>
+      );
+    }
+    return (
+      <div>
+        <label>Enter a YouTube link:{urlInput}</label>
+        {submitBtn}
+        <br/>
+        {errorLabel}
+        {videoTitleLabel}
+        {downloadEntireVideoBtn}
+        <br/>
+        {selectAllInput}
+        {selectAllInputLabel}
+        {sectionsList}
+        {downloadBtn}
         {this.downloadSpinner()}
       </div>
     );
