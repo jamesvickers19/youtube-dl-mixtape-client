@@ -218,20 +218,27 @@ class StartForm extends React.Component {
       );
     }
     return (
-      <div>
-        <label>Enter a YouTube link:{urlInput}</label>
-        {submitBtn}
-        <br/>
-        {errorLabel}
-        {videoTitleLabel}
-        {downloadEntireVideoBtn}
-        <br/>
-        {selectAllInput}
-        {selectAllInputLabel}
-        {sectionsList}
-        {downloadBtn}
-        {this.downloadSpinner()}
-      </div>
+      <Grid columns={"1fr"} rows={"1fr"}>
+        <Cell>
+          <h1>Youtube Downloader</h1>
+        </Cell>
+        <Cell>
+          <label>Enter a YouTube link:{urlInput}</label>
+          {submitBtn}
+          {this.downloadSpinner()}
+        </Cell>
+        <Cell>{errorLabel}</Cell>
+        <Cell>{videoTitleLabel}</Cell>
+        <Cell>
+          {downloadEntireVideoBtn}
+          {downloadBtn}
+        </Cell>
+        <Cell>
+          {selectAllInput}
+          {selectAllInputLabel}
+        </Cell>
+        <Cell>{sectionsList}</Cell>
+      </Grid>
     );
   }
 }
