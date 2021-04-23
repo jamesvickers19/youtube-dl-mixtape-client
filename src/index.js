@@ -180,7 +180,7 @@ class StartForm extends React.Component {
              id="changeAllSelection"
              disabled={this.state.downloading}/>);
     let selectAllInputLabel = this.nullIfNoSections(
-      <label htmlFor="changeAllSelection">Select / unselect all</label>
+      <label htmlFor="changeAllSelection">Select / unselect all sections</label>
     );
     let sectionsList = (
       <ul>
@@ -207,7 +207,7 @@ class StartForm extends React.Component {
     );
     let downloadBtn = (
       this.nullIfNoSections(
-        <button disabled={this.state.downloading} onClick={this.handleDownload}>download selected sections</button>)
+        <button disabled={this.state.downloading} onClick={this.handleDownload}>Download selected sections</button>)
     );
     let videoTitleLabel = null;
     let downloadEntireVideoBtn = null;
