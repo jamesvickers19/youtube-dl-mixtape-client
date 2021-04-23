@@ -225,14 +225,14 @@ class StartForm extends React.Component {
         <Cell>
           <label>Enter a YouTube link:{urlInput}</label>
           {submitBtn}
+        </Cell>
+        <Cell>
+          {errorLabel}
           {this.downloadSpinner()}
         </Cell>
-        <Cell>{errorLabel}</Cell>
         <Cell>{videoTitleLabel}</Cell>
-        <Cell>
-          {downloadEntireVideoBtn}
-          {downloadBtn}
-        </Cell>
+        <Cell>{downloadEntireVideoBtn}</Cell>
+        <Cell>{downloadBtn}</Cell>
         <Cell>
           {selectAllInput}
           {selectAllInputLabel}
