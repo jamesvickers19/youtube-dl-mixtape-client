@@ -169,8 +169,14 @@ class StartForm extends React.Component {
   }
 
   render() {
-    let urlInput = (<input onChange={this.handleVideoUrlInputChange}/>);
-    let submitBtn = (<button disabled={!this.state.videoId} onClick={this.handleSubmit}>submit</button>);
+    let urlInput = (<input id="urlInput" type="text" onChange={this.handleVideoUrlInputChange}/>);
+    let submitBtn = (
+      <button
+        id="submitBtn"
+        disabled={!this.state.videoId}
+        onClick={this.handleSubmit}>
+        Submit
+    </button>);
     let errorLabel = (<label>{this.state.errorMessage}</label>);
     let selectAllInput = this.nullIfNoSections(
       <input checked={this.state.sections.every(t => t.selected)}
@@ -233,7 +239,7 @@ class StartForm extends React.Component {
           <hr style={{margin: "0px 0px 20px 0px;"}}/>
         </Cell>
         <Cell center>
-          <label>Enter a YouTube link:{urlInput}</label>
+          <label style={{fontSize: '30px'}}>Enter a YouTube link:{urlInput}</label>
           {submitBtn}
         </Cell>
         <Cell center>

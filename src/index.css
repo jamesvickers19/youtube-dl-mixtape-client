@@ -2,3 +2,13 @@ label {
     font-size: 20px;
     font-weight: 700;
 }
+
+#urlInput {
+    height: 25px;
+    width: 50%;
+}
+
+#submitBtn {
+    height: 30px;
+    width: 60px;
+}
