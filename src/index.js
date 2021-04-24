@@ -212,7 +212,14 @@ class StartForm extends React.Component {
     let videoTitleLabel = null;
     let downloadEntireVideoBtn = null;
     if (this.state.fetchedVideoId != null) {
-      videoTitleLabel = (<label>Video: {this.state.videoInfo.title}</label>);
+      videoTitleLabel = (
+      <div>
+        <label>Video:     </label>
+        <label style={{fontStyle: 'italic'}}>
+          {this.state.videoInfo.title}
+        </label>
+      </div>
+      );
       downloadEntireVideoBtn = (
         <button disabled={this.state.downloading} onClick={this.handleDownloadEntireVideo}>
                   Download entire video
