@@ -175,6 +175,10 @@ class StartForm extends React.Component {
         id="submitBtn"
         type="submit"
         disabled={!this.state.videoId}
+        // show glowing animation if valid video is entered and hasn't been fetched yet
+        style={{animation: this.state.videoId && !this.state.fetchedVideoId
+          ? 'glowing 1300ms infinite'
+          : 'none'}}
         onClick={this.handleSubmit}>
         Submit
     </button>);
