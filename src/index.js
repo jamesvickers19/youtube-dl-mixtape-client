@@ -171,8 +171,9 @@ class StartForm extends React.Component {
   render() {
     let urlInput = (<input id="urlInput" type="text" onChange={this.handleVideoUrlInputChange}/>);
     let submitBtn = (
-      <button
+    <button
         id="submitBtn"
+        type="submit"
         disabled={!this.state.videoId}
         onClick={this.handleSubmit}>
         Submit
@@ -213,8 +214,12 @@ class StartForm extends React.Component {
     );
     let downloadBtn = (
       this.nullIfNoSections(
-        <button disabled={this.state.downloading} onClick={this.handleDownload}>Download selected sections</button>)
-    );
+        <button
+          type="button"
+          disabled={this.state.downloading}
+          onClick={this.handleDownload}>
+          Download selected sections
+      </button>));
     let videoTitleLabel = null;
     let downloadEntireVideoBtn = null;
     if (this.state.fetchedVideoId != null) {
@@ -227,12 +232,16 @@ class StartForm extends React.Component {
       </div>
       );
       downloadEntireVideoBtn = (
-        <button disabled={this.state.downloading} onClick={this.handleDownloadEntireVideo}>
-                  Download entire video
+        <button
+          type="button"
+          disabled={this.state.downloading}
+          onClick={this.handleDownloadEntireVideo}>
+          Download entire video
         </button>
       );
     }
     return (
+    <form>
       <Grid columns={"1fr"} rows={"1fr"}>
         <Cell center>
           <h1>Youtube Downloader</h1>
@@ -255,6 +264,7 @@ class StartForm extends React.Component {
         </Cell>
         <Cell center>{sectionsList}</Cell>
       </Grid>
+    </form>
     );
   }
 }
