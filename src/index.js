@@ -208,6 +208,7 @@ class StartForm extends React.Component {
                 value={section.name}
                 startTime={section.start}
                 endTime={section.end}
+                style={{width: '800px'}}
                 videoId={this.state.fetchedVideoId}
                 disabled={this.state.downloading}
               />
