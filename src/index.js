@@ -248,7 +248,12 @@ class StartForm extends React.Component {
           <hr style={{margin: "0px 0px 20px 0px;"}}/>
         </Cell>
         <Cell center>
-          <label style={{fontSize: '30px'}}>Enter a YouTube link:{urlInput}</label>
+          <label style={{fontSize: '30px'}}>Enter a YouTube link:</label>
+        </Cell>
+        <Cell center>
+          {urlInput}
+        </Cell>
+        <Cell center>
           {submitBtn}
         </Cell>
         <Cell center>
