@@ -74,15 +74,16 @@ class StartForm extends React.Component {
     fetch(`${serverURL}${endpoint}`, requestParams)
       .then(response => {
         if (!response.ok) {
-          throw response;
+          return response.text().then(text => { throw Error(text); });
         }
         return response;
       })
       .then(response => responseHandler(response))
-      .catch(e => e.body().then(msg => { 
+      .catch(error => {
+        let msg = error.message;
         console.log(`Request to ${serverURL} failed: ${msg}`);
         errorMsg = `Error: ${msg}`;
-      }))
+      })
       .finally(() => {
         this.setState({
           downloading: false,
