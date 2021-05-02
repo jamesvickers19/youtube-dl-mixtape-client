@@ -163,9 +163,9 @@ class StartForm extends React.Component {
       return (
         <Loader
           type="Watch"
-          color="#00BFFF"
-          height={50}
-          width={50}/>);
+          color="#2ba805"
+          height={150}
+          width={150}/>);
     }
   }
 
