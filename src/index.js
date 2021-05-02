@@ -250,7 +250,9 @@ class StartForm extends React.Component {
     <form>
       <Grid columns={"1fr"} rows={"1fr"}>
         <Cell center>
-          <h1>Youtube Downloader</h1>
+          <h1 style={{fontSize: '50px', fontFamily: 'Garamond'}}>
+            Youtube Mixtape Downloader
+          </h1>
           <hr style={{margin: "0px 0px 20px 0px;"}}/>
         </Cell>
         <Cell center>
