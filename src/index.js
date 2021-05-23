@@ -253,7 +253,7 @@ class StartForm extends React.Component {
           <h1 style={{fontSize: '50px', fontFamily: 'Garamond'}}>
             Youtube Mixtape Downloader
           </h1>
-          <hr style={{margin: "0px 0px 20px 0px;"}}/>
+          <hr style={{margin: "0px 0px 20px 0px"}}/>
         </Cell>
         <Cell center>
           <label style={{fontSize: '30px'}}>Enter a YouTube link:</label>
