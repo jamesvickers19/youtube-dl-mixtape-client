@@ -112,7 +112,7 @@ class StartForm extends React.Component {
     let videoTitle = this.state.videoInfo.title;
     this.request(
       `/download/${videoId}`,
-      response => response.blob().then(blob => download(blob, `${videoTitle}.m4a`)));
+      response => response.blob().then(blob => download(blob, `${videoTitle}.mp3`)));
     event.preventDefault();
   }
 
